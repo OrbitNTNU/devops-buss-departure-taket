@@ -20,8 +20,8 @@ sizeDifference = (screenSizes[0]/origSize[0],screenSizes[1]/origSize[1])
 # setting up pygame for use ------------------
 pygame.init()
 
-canvas = pygame.display.set_mode(screenSizes)
-pygame.display.set_caption("You aren't supposed to see this")
+canvas = pygame.display.set_mode(screenSizes, pygame.FULLSCREEN)
+pygame.display.set_caption("You aren't supposed to see this ")
 exit = False
 
 # -------------------------------------------

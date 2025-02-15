@@ -121,7 +121,7 @@ class buss:
         pygame.draw.rect(canvas, (255,255,255,50), self.rect)
 
         # drawing circle depicting status of buss
-        center = (int(100*screenDifference[0]), self.rect.bottom-(self.rect.height/2))
+        center = (int(100*screenDifference[0]), int(self.rect.bottom-(self.rect.height/2)))
         if self.forBoarding!=True:
             # if forBoarding is false, we draw a middle-sized green circle
             radius = int(10*screenDifference[0])
