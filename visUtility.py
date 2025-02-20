@@ -44,7 +44,7 @@ class buss:
 
         # creating rect for buss visualizing
         leftRect = int(45*screenDifference[0])
-        topRect = int(135*screenDifference[1] + (n*int(63*screenDifference[1])) + parentPos[1])
+        topRect = int(130*screenDifference[1] + (n*int(65*screenDifference[1])) + parentPos[1])
         widthRect = parentSize[0] - int(45*screenDifference[0])
         heightRect = int(54*screenDifference[1])
 
@@ -117,7 +117,7 @@ class buss:
 
 
     def draw(self,canvas:pygame.surface.Surface,screenDifference,rounds):
-        self.rect.move(self.rect.x+int(10*rounds*screenDifference[1]),self.rect.y)
+        #self.rect.y-=int(0.1*rounds*screenDifference[1])
 
         # drawing background
         pygame.draw.rect(canvas, (255,255,255,50), self.rect)

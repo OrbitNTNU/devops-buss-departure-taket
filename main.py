@@ -20,7 +20,7 @@ sizeDifference = (screenSizes[0]/origSize[0],screenSizes[1]/origSize[1])
 pygame.init()
 
 canvas = pygame.display.set_mode(screenSizes, pygame.FULLSCREEN)
-pygame.display.set_caption("You aren't supposed to see this ")
+pygame.display.set_caption("You aren't supposed to see this")
 exit = False
 
 # -------------------------------------------
@@ -59,7 +59,7 @@ if len(bussRoutes) != 3:
 
 gløshaugen=visUtility.bussStops(bussRoutes[0]["data"]["stopPlace"],screenSizes,titles,otherFont,0,-1,sizeDifference,9)
 høgskoleringen=visUtility.bussStops(bussRoutes[1]["data"]["stopPlace"],screenSizes,titles,otherFont,int(screenSizes[1]/2),-1,sizeDifference,9)
-studentersamfundet=visUtility.bussStops(bussRoutes[2]["data"]["stopPlace"],screenSizes,titles,otherFont,0,5,sizeDifference,20)
+studentersamfundet=visUtility.bussStops(bussRoutes[2]["data"]["stopPlace"],screenSizes,titles,otherFont,0,5,sizeDifference,23)
 
 # -------------------------------------------
 
@@ -68,8 +68,14 @@ studentersamfundet=visUtility.bussStops(bussRoutes[2]["data"]["stopPlace"],scree
 
 images = json.load(open("modules.json","r"))
 
-img1 = random.choice(images[1])
-img2 = random.choice(images[0])
+img1Choises=[i[0] for i in images[1]]
+img1Chances=[i[1] for i in images[1]]
+
+img2Choises=[i[0] for i in images[0]]
+img2Chances=[i[1] for i in images[0]]
+
+img1 = random.choices(img1Choises,img1Chances)[0]
+img2 = random.choices(img2Choises,img2Chances)[0]
 
 image1 = pygame.image.load(img1).convert_alpha(canvas)
 size = (int(image1.get_width()*sizeDifference[1]*0.9),int(image1.get_height()*sizeDifference[1]*0.9))
@@ -108,8 +114,14 @@ while not exit:
                 roundsGone=0
 
                 # and we create new images
-                img1 = random.choice(images[1])
-                img2 = random.choice(images[0])
+                img1Choises=[i[0] for i in images[1]]
+                img1Chances=[i[1] for i in images[1]]
+
+                img2Choises=[i[0] for i in images[0]]
+                img2Chances=[i[1] for i in images[0]]
+
+                img1 = random.choices(img1Choises,img1Chances)[0]
+                img2 = random.choices(img2Choises,img2Chances)[0]
 
                 image1 = pygame.image.load(img1).convert_alpha(canvas)
                 size = (int(image1.get_width()*sizeDifference[0]*0.9),int(image1.get_height()*sizeDifference[1]*0.9))
@@ -120,11 +132,14 @@ while not exit:
                 image2 = pygame.transform.scale(image2,size)
             # -------------------------------------------------
 
+            elif showfull==2:
+                roundsGone=0
+
 
             # if not, we created the bussStops again
             gløshaugen=visUtility.bussStops(bussRoutes[0]["data"]["stopPlace"],screenSizes,titles,otherFont,0,-1,sizeDifference,9)
             høgskoleringen=visUtility.bussStops(bussRoutes[1]["data"]["stopPlace"],screenSizes,titles,otherFont,int(screenSizes[1]/2),-1,sizeDifference,9)
-            studentersamfundet=visUtility.bussStops(bussRoutes[2]["data"]["stopPlace"],screenSizes,titles,otherFont,0,5,sizeDifference,20)
+            studentersamfundet=visUtility.bussStops(bussRoutes[2]["data"]["stopPlace"],screenSizes,titles,otherFont,0,5,sizeDifference,21)
 
         else:
             # make sure to note down where it failed
@@ -169,11 +184,11 @@ while not exit:
     canvas.fill((24,46,70))
 
     # drawing the images
-    destx=int((screenSizes[0]-900*sizeDifference[0])-(350*sizeDifference[0])+(image1.get_width()/2))
+    destx=int((1400*sizeDifference[0])+(image1.get_width()/2))
     dest=(destx,0)
     canvas.blit(image1,dest)
 
-    destx=int((screenSizes[0]-900*sizeDifference[0])-(350*sizeDifference[0])+(image2.get_width()/2))
+    destx=int((1400*sizeDifference[0])+(image2.get_width()/2))
     dest=(destx, int(720*sizeDifference[1]))
     canvas.blit(image2,dest)
 
