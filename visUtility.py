@@ -43,10 +43,10 @@ class buss:
         self.forBoarding=info["forBoarding"]
 
         # creating rect for buss visualizing
-        leftRect = int(50*screenDifference[0])
-        topRect = int(150*screenDifference[1] + (n*int(66*screenDifference[1])) + parentPos[1])
-        widthRect = parentSize[0] - int(50*screenDifference[0])
-        heightRect = int(60*screenDifference[1])
+        leftRect = int(45*screenDifference[0])
+        topRect = int(135*screenDifference[1] + (n*int(63*screenDifference[1])) + parentPos[1])
+        widthRect = parentSize[0] - int(45*screenDifference[0])
+        heightRect = int(54*screenDifference[1])
 
         self.rect = pygame.Rect(leftRect, topRect, widthRect, heightRect)
 
@@ -59,7 +59,7 @@ class buss:
             self.aimedTimeText = otherFont.render(info["aimedDepartureTime"][11:16], True, (0,0,0))
 
             self.aimedTimeTextRect = self.aimedTimeText.get_rect()
-            movex = int(150*screenDifference[0])
+            movex = int(135*screenDifference[0])
             movey = self.rect.bottom-(self.rect.height/2)-(self.aimedTimeTextRect.height/2)
             self.aimedTimeTextRect = self.aimedTimeTextRect.move(movex,movey)
 
@@ -79,7 +79,7 @@ class buss:
             # either way, we create the rect for aimed time text
             self.aimedTimeTextRect = self.aimedTimeText.get_rect()
 
-            movex = int(150*screenDifference[0])
+            movex = int(135*screenDifference[0])
             movey = self.rect.bottom-(self.rect.height/2)-(self.aimedTimeTextRect.height/2)
             self.aimedTimeTextRect = self.aimedTimeTextRect.move(movex,movey)
 
@@ -89,7 +89,7 @@ class buss:
         # creating text for expected time
         self.timeText = otherFont.render(info["expectedDepartureTime"][11:16], True, (0,0,0))
         self.timeTextRect = self.timeText.get_rect()
-        movex = int(300*screenDifference[0])
+        movex = int(270*screenDifference[0])
         movey = self.rect.bottom-(self.rect.height/2)-(self.timeTextRect.height/2)
         self.timeTextRect = self.timeTextRect.move(movex,movey)
 
@@ -108,7 +108,7 @@ class buss:
 
         self.displayText = otherFont.render(bussNumber+"  "+info["destinationDisplay"]["frontText"], True, (0,0,0))
         self.displayTextRect = self.displayText.get_rect()
-        movex = int(500*screenDifference[0])
+        movex = int(450*screenDifference[0])
         movey = self.rect.bottom-(self.rect.height/2)-(self.displayTextRect.height/2)
         self.displayTextRect = self.displayTextRect.move(movex,movey)
         
@@ -116,24 +116,26 @@ class buss:
 
 
 
-    def draw(self,canvas:pygame.surface.Surface,screenDifference):
+    def draw(self,canvas:pygame.surface.Surface,screenDifference,rounds):
+        self.rect.move(self.rect.x+int(10*rounds*screenDifference[1]),self.rect.y)
+
         # drawing background
         pygame.draw.rect(canvas, (255,255,255,50), self.rect)
 
         # drawing circle depicting status of buss
-        center = (int(100*screenDifference[0]), int(self.rect.bottom-(self.rect.height/2)))
+        center = (int(90*screenDifference[0]), int(self.rect.bottom-(self.rect.height/2)))
         if self.forBoarding!=True:
             # if forBoarding is false, we draw a middle-sized green circle
-            radius = int(10*screenDifference[0])
+            radius = int(9*screenDifference[0])
             pygame.draw.circle(canvas,(0,255,0),center,radius)
         elif self.realtime:
             # if it has a realtime reading we draw a large blue circle
             # colour matches orbit lifesupport colours.
-            radius = int(20*screenDifference[0])
+            radius = int(18*screenDifference[0])
             pygame.draw.circle(canvas,(64,138,201),center,radius)
         else:
             # if neither, we draw a small red circle, indicating we don't have a realtime reading
-            radius = int(5*screenDifference[0])
+            radius = int(4.5*screenDifference[0])
             pygame.draw.circle(canvas,(255,0,0),center,radius)
 
         
@@ -144,21 +146,24 @@ class buss:
 
         # if aimed is not the same as expected we draw a line over aimed time
         if self.makeLine:
-            startPos = (int(145*screenDifference[0]),self.rect.bottom-(self.rect.height/2))
-            endPos = (int(155*screenDifference[0]+self.aimedTimeTextRect.width),self.rect.bottom-(self.rect.height/2))
+            startPos = (int(130.5*screenDifference[0]),self.rect.bottom-(self.rect.height/2))
+            endPos = (int(139.5*screenDifference[0]+self.aimedTimeTextRect.width),self.rect.bottom-(self.rect.height/2))
             pygame.draw.line(canvas,(0,0,0),startPos,endPos,int(3*screenDifference[1]))
 
 
 
 class bussStops:
-    def __init__(self,info,screenSize,titleFont,otherFont,y,timeLimit,screenDifference):
+    def __init__(self,info,screenSize,titleFont,otherFont,y,timeLimit,screenDifference,showAmount):
         
         self.busses=[]
 
 
         # setting size and position
-        self.size = (screenSize[0]-int(1000*screenDifference[0]),screenSize[1])
+        self.size = (screenSize[0]-int(900*screenDifference[0]),screenSize[1])
         self.pos = (0,y)
+
+        
+        self.showAmount=showAmount
 
 
         self.rect = pygame.Rect(self.pos[0],self.pos[1],self.size[0],self.size[1])
@@ -168,7 +173,7 @@ class bussStops:
         self.titleText = titleFont.render(info["name"], True, (255,255,255))
         self.titleRect = self.titleText.get_rect()
         titlex=int((self.size[0]/2)-(self.titleRect.width/2)-3)
-        titley=int(30*screenDifference[1]+self.pos[1])
+        titley=int(27*screenDifference[1]+self.pos[1])
         self.titleRect = self.titleRect.move(titlex,titley)
 
 
@@ -195,7 +200,7 @@ class bussStops:
     
 
     # drawing to canvas
-    def draw(self,canvas,screenDifference):
+    def draw(self,canvas,screenDifference,rounds):
         # drawing background
         pygame.draw.rect(canvas,(24,46,70),self.rect)
 
@@ -203,9 +208,9 @@ class bussStops:
         canvas.blit(self.titleText,self.titleRect)
 
         # drawing all busses
-        for i in range(len(self.busses)):
-            self.busses[i].draw(canvas,screenDifference)
+        for i in range(self.showAmount):
+            self.busses[i].draw(canvas,screenDifference,rounds)
 
         # drawing red circle by the title if we didn't get last api call right
         if self.hasConnection == False:
-            pygame.draw.circle(canvas,(255,0,0),(50*screenDifference[0],self.rect.top+50*screenDifference[1]),int(5*screenDifference[0]))
+            pygame.draw.circle(canvas,(255,0,0),(45*screenDifference[0],self.rect.top+45*screenDifference[1]),int(4.5*screenDifference[0]))

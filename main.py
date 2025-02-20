@@ -9,9 +9,8 @@ import random
 random.seed(time.time())
 
 # Screen sizes ------------------------------
-
-origSize = (2560,1600)
 screenSizes = (get_monitors()[0].width,get_monitors()[0].height)
+origSize = (2560,1440)
 sizeDifference = (screenSizes[0]/origSize[0],screenSizes[1]/origSize[1])
 
 # -------------------------------------------
@@ -29,36 +28,38 @@ exit = False
 
 # setting up fonts --------------------------
 
-titles = pygame.font.Font('freesansbold.ttf', int(100*sizeDifference[0]))
-otherFont = pygame.font.Font('freesansbold.ttf', int(50*sizeDifference[0]))
+titles = pygame.font.Font('freesansbold.ttf', int(90*sizeDifference[0]))
+otherFont = pygame.font.Font('freesansbold.ttf', int(45*sizeDifference[0]))
 
 # -------------------------------------------
 
 
 # setting up bussRoutes ---------------------
-buss1id="44085"
+buss1id="44085" #Gløsaugen
+#buss1id="43984" Byåsen skole
 buss1number="15"
 
-buss2id="42029"
+buss2id="42029" #Høgskoleringen
 buss2number="15"
 
-buss3id="42660"
+buss3id="42660" #Studentersamfundet
 buss3number="60"
 
 # getting the entur api information
 bussRoutes, fails = visUtility.getBussStops(buss1id,buss1number,buss2id,buss2number,buss3id,buss3number)
 
 if len(bussRoutes) != 3:
-    print("OPPS API FAIL PÅ START!")
+    print("OPPS API FAIL AT START!")
+    print("CANNOT PROGRESS")
     quit()
 # -------------------------------------------
 
 
 # creating bussStops ------------------------
 
-gløshaugen=visUtility.bussStops(bussRoutes[0]["data"]["stopPlace"],screenSizes,titles,otherFont,0,-1,sizeDifference)
-høgskoleringen=visUtility.bussStops(bussRoutes[1]["data"]["stopPlace"],screenSizes,titles,otherFont,int(screenSizes[1]/2),-1,sizeDifference)
-studentersamfundet=visUtility.bussStops(bussRoutes[2]["data"]["stopPlace"],screenSizes,titles,otherFont,0,5,sizeDifference)
+gløshaugen=visUtility.bussStops(bussRoutes[0]["data"]["stopPlace"],screenSizes,titles,otherFont,0,-1,sizeDifference,9)
+høgskoleringen=visUtility.bussStops(bussRoutes[1]["data"]["stopPlace"],screenSizes,titles,otherFont,int(screenSizes[1]/2),-1,sizeDifference,9)
+studentersamfundet=visUtility.bussStops(bussRoutes[2]["data"]["stopPlace"],screenSizes,titles,otherFont,0,5,sizeDifference,20)
 
 # -------------------------------------------
 
@@ -71,11 +72,11 @@ img1 = random.choice(images[1])
 img2 = random.choice(images[0])
 
 image1 = pygame.image.load(img1).convert_alpha(canvas)
-size = (int(image1.get_width()*sizeDifference[0]),int(image1.get_height()*sizeDifference[1]))
+size = (int(image1.get_width()*sizeDifference[1]*0.9),int(image1.get_height()*sizeDifference[1]*0.9))
 image1 = pygame.transform.scale(image1,size)
 
 image2 = pygame.image.load(img2).convert_alpha(canvas)
-size = (int(image2.get_width()*sizeDifference[0]),int(image2.get_height()*sizeDifference[1]))
+size = (int(image2.get_width()*sizeDifference[1]*0.9),int(image2.get_height()*sizeDifference[1]*0.9))
 image2 = pygame.transform.scale(image2,size)
 # -------------------------------------------
 
@@ -85,6 +86,7 @@ startTime=time.time() # makes sure program only does stuff when the time is righ
 showfull = 0 # does the same thing, for different things, with counting based on the starttime thing
 # --------------------------
 
+roundsGone=0
 
 # loop while i say not to
 while not exit:
@@ -103,25 +105,26 @@ while not exit:
             if showfull==3:
                 # if showfull is 3, the cycle restarts
                 showfull=0
+                roundsGone=0
 
                 # and we create new images
                 img1 = random.choice(images[1])
                 img2 = random.choice(images[0])
 
                 image1 = pygame.image.load(img1).convert_alpha(canvas)
-                size = (int(image1.get_width()*sizeDifference[0]),int(image1.get_height()*sizeDifference[1]))
+                size = (int(image1.get_width()*sizeDifference[0]*0.9),int(image1.get_height()*sizeDifference[1]*0.9))
                 image1 = pygame.transform.scale(image1,size)
 
                 image2 = pygame.image.load(img2).convert_alpha(canvas)
-                size = (int(image2.get_width()*sizeDifference[0]),int(image2.get_height()*sizeDifference[1]))
+                size = (int(image2.get_width()*sizeDifference[0]*0.9),int(image2.get_height()*sizeDifference[1]*0.9))
                 image2 = pygame.transform.scale(image2,size)
             # -------------------------------------------------
 
 
             # if not, we created the bussStops again
-            gløshaugen=visUtility.bussStops(bussRoutes[0]["data"]["stopPlace"],screenSizes,titles,otherFont,0,-1,sizeDifference)
-            høgskoleringen=visUtility.bussStops(bussRoutes[1]["data"]["stopPlace"],screenSizes,titles,otherFont,int(screenSizes[1]/2),-1,sizeDifference)
-            studentersamfundet=visUtility.bussStops(bussRoutes[2]["data"]["stopPlace"],screenSizes,titles,otherFont,0,5,sizeDifference)
+            gløshaugen=visUtility.bussStops(bussRoutes[0]["data"]["stopPlace"],screenSizes,titles,otherFont,0,-1,sizeDifference,9)
+            høgskoleringen=visUtility.bussStops(bussRoutes[1]["data"]["stopPlace"],screenSizes,titles,otherFont,int(screenSizes[1]/2),-1,sizeDifference,9)
+            studentersamfundet=visUtility.bussStops(bussRoutes[2]["data"]["stopPlace"],screenSizes,titles,otherFont,0,5,sizeDifference,20)
 
         else:
             # make sure to note down where it failed
@@ -166,10 +169,12 @@ while not exit:
     canvas.fill((24,46,70))
 
     # drawing the images
-    dest=(int(screenSizes[0]-(900*sizeDifference[0])),0)
+    destx=int((screenSizes[0]-900*sizeDifference[0])-(350*sizeDifference[0])+(image1.get_width()/2))
+    dest=(destx,0)
     canvas.blit(image1,dest)
 
-    dest=(int(screenSizes[0]-(900*sizeDifference[0])), int(800*sizeDifference[1]))
+    destx=int((screenSizes[0]-900*sizeDifference[0])-(350*sizeDifference[0])+(image2.get_width()/2))
+    dest=(destx, int(720*sizeDifference[1]))
     canvas.blit(image2,dest)
 
     
@@ -177,14 +182,14 @@ while not exit:
     # checking which screen to draw
     if showfull<=1:
         # drawing gløs and høg
-        gløshaugen.draw(canvas,sizeDifference)
-        høgskoleringen.draw(canvas,sizeDifference)
+        gløshaugen.draw(canvas,sizeDifference,roundsGone)
+        høgskoleringen.draw(canvas,sizeDifference,roundsGone)
     else:
         #drawing samf
-        studentersamfundet.draw(canvas,sizeDifference)
+        studentersamfundet.draw(canvas,sizeDifference,roundsGone)
 
     # drawing time
-    dest = (int(2350*sizeDifference[0]),int(1550*sizeDifference[1]))
+    dest = (int(2350*sizeDifference[0]),int(1390*sizeDifference[1]))
     canvas.blit(timeText,dest)
 
     pygame.display.update()
@@ -193,3 +198,4 @@ while not exit:
 
     # waiting a little, so it doens't run all the time
     pygame.time.delay(500) # .5 sec
+    roundsGone+=1
