@@ -139,7 +139,7 @@ while not exit:
             # if not, we created the bussStops again
             gløshaugen=visUtility.bussStops(bussRoutes[0]["data"]["stopPlace"],screenSizes,titles,otherFont,0,-1,sizeDifference,9)
             høgskoleringen=visUtility.bussStops(bussRoutes[1]["data"]["stopPlace"],screenSizes,titles,otherFont,int(screenSizes[1]/2),-1,sizeDifference,9)
-            studentersamfundet=visUtility.bussStops(bussRoutes[2]["data"]["stopPlace"],screenSizes,titles,otherFont,0,5,sizeDifference,21)
+            studentersamfundet=visUtility.bussStops(bussRoutes[2]["data"]["stopPlace"],screenSizes,titles,otherFont,0,5,sizeDifference,20)
 
         else:
             # make sure to note down where it failed
@@ -204,7 +204,7 @@ while not exit:
         studentersamfundet.draw(canvas,sizeDifference,roundsGone)
 
     # drawing time
-    dest = (int(2350*sizeDifference[0]),int(1390*sizeDifference[1]))
+    dest = (int(2370*sizeDifference[0]),int(1390*sizeDifference[1]))
     canvas.blit(timeText,dest)
 
     pygame.display.update()
