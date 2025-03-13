@@ -1,15 +1,22 @@
 [
     [
-        ["images\\qr code test.png",0.25],
-        ["images\\generalAssembly.png",0.75]
+        ["images\\qr code test.png",1]
     ],
     [
-        ["images\\meme1.png",0.1],
-        ["images\\meme2.png",0.1],
-        ["images\\selfiesat.png",0.16],
-        ["images\\framsat-1.png",0.16],
-        ["images\\framsat-1.5.png",0.16],
-        ["images\\biosat.png",0.16],
-        ["images\\magsat.png",0.16]
+        [
+            ["images\\meme18022025.png",1],
+            ["images\\meme25022025.png",1],
+            ["images\\meme11032025.png",1],
+            1
+        ],
+        [
+            ["images\\selfiesat.png",1],
+            ["images\\framsat-1.png",1],
+            ["images\\framsat-1.5.png",1],
+            ["images\\biosat.png",1],
+            ["images\\magsat.png",1],
+            ["images\\raysat.png",1],
+            4
+        ]
     ]
 ]

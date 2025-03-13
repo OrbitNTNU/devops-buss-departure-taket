@@ -4,6 +4,10 @@ import visUtility
 import time
 import json
 import random
+import generalUtility
+from startLoading import showLoadingScreen
+
+time.sleep(0)
 
 # we set a random seed, based on the current date-time
 random.seed(time.time())
@@ -23,6 +27,7 @@ canvas = pygame.display.set_mode(screenSizes, pygame.FULLSCREEN)
 pygame.display.set_caption("You aren't supposed to see this")
 exit = False
 
+pygame.mouse.set_visible(False)
 # -------------------------------------------
 
 
@@ -30,6 +35,7 @@ exit = False
 
 titles = pygame.font.Font('freesansbold.ttf', int(90*sizeDifference[0]))
 otherFont = pygame.font.Font('freesansbold.ttf', int(45*sizeDifference[0]))
+timeFont = pygame.font.Font('freesansbold.ttf', int(70*sizeDifference[0]))
 
 # -------------------------------------------
 
@@ -43,15 +49,31 @@ buss2id="42029" #Høgskoleringen
 buss2number="15"
 
 buss3id="42660" #Studentersamfundet
+#buss3id="0"
 buss3number="60"
 
 # getting the entur api information
 bussRoutes, fails = visUtility.getBussStops(buss1id,buss1number,buss2id,buss2number,buss3id,buss3number)
 
-if len(bussRoutes) != 3:
-    print("OPPS API FAIL AT START!")
-    print("CANNOT PROGRESS")
-    quit()
+ready=0
+for i in fails:
+    if i=="":
+        ready+=1
+while ready!=3:
+    showLoadingScreen(canvas,screenSizes,fails,otherFont)
+    pygame.display.update()
+    pygame.time.delay(10000)
+    for event in pygame.event.get(): 
+        if event.type == pygame.QUIT: 
+            quit()
+        if event.type == pygame.KEYDOWN :
+            if event.key == pygame.K_ESCAPE:
+                quit()
+    bussRoutes, fails = visUtility.getBussStops(buss1id,buss1number,buss2id,buss2number,buss3id,buss3number)
+    ready=0
+    for i in fails:
+        if i=="":
+            ready+=1
 # -------------------------------------------
 
 
@@ -68,23 +90,18 @@ studentersamfundet=visUtility.bussStops(bussRoutes[2]["data"]["stopPlace"],scree
 
 images = json.load(open("modules.json","r"))
 
-img1Choises=[i[0] for i in images[1]]
-img1Chances=[i[1] for i in images[1]]
-
-img2Choises=[i[0] for i in images[0]]
-img2Chances=[i[1] for i in images[0]]
-
-img1 = random.choices(img1Choises,img1Chances)[0]
-img2 = random.choices(img2Choises,img2Chances)[0]
+img1 = generalUtility.chooseRandomPicture(images[1])
+img2 = generalUtility.chooseRandomPicture(images[0])
 
 image1 = pygame.image.load(img1).convert_alpha(canvas)
-size = (int(image1.get_width()*sizeDifference[1]*0.9),int(image1.get_height()*sizeDifference[1]*0.9))
+size = (int(image1.get_width()*sizeDifference[1]),int(image1.get_height()*sizeDifference[1]))
 image1 = pygame.transform.scale(image1,size)
 
 image2 = pygame.image.load(img2).convert_alpha(canvas)
-size = (int(image2.get_width()*sizeDifference[1]*0.9),int(image2.get_height()*sizeDifference[1]*0.9))
+size = (int(image2.get_width()*sizeDifference[1]),int(image2.get_height()*sizeDifference[1]))
 image2 = pygame.transform.scale(image2,size)
 # -------------------------------------------
+
 
 
 # creating general variables 
@@ -101,10 +118,25 @@ while not exit:
     if time.time() - startTime >= 10:
         # if it has, we create the bussStops again, with new information
 
-        bussRoutes, fails = visUtility.getBussStops(buss1id,buss1number,buss2id,buss2number,buss3id,buss3number)
+        if showfull==0:
+            bussRouteTemp, failTemp = visUtility.getBussStop(buss1id,buss1number)
+            bussRoutes[0]=bussRouteTemp
+            fails[0]=failTemp
+        elif showfull==1:
+            bussRouteTemp, failTemp = visUtility.getBussStop(buss3id,buss3number)
+            bussRoutes[2]=bussRouteTemp
+            fails[2]=failTemp
+        else:
+            bussRouteTemp, failTemp = visUtility.getBussStop(buss2id,buss2number)
+            bussRoutes[1]=bussRouteTemp
+            fails[1]=failTemp
 
         # we check if there was no fail
-        if len(bussRoutes) == 3:
+        pp=0
+        for i in fails:
+            if i=="":
+                pp+=1
+        if pp==3:
 
             # we add to showfull
             showfull+=1
@@ -114,21 +146,15 @@ while not exit:
                 roundsGone=0
 
                 # and we create new images
-                img1Choises=[i[0] for i in images[1]]
-                img1Chances=[i[1] for i in images[1]]
-
-                img2Choises=[i[0] for i in images[0]]
-                img2Chances=[i[1] for i in images[0]]
-
-                img1 = random.choices(img1Choises,img1Chances)[0]
-                img2 = random.choices(img2Choises,img2Chances)[0]
+                img1 = generalUtility.chooseRandomPicture(images[1])
+                img2 = generalUtility.chooseRandomPicture(images[0])
 
                 image1 = pygame.image.load(img1).convert_alpha(canvas)
-                size = (int(image1.get_width()*sizeDifference[0]*0.9),int(image1.get_height()*sizeDifference[1]*0.9))
+                size = (int(image1.get_width()*sizeDifference[0]),int(image1.get_height()*sizeDifference[1]))
                 image1 = pygame.transform.scale(image1,size)
 
                 image2 = pygame.image.load(img2).convert_alpha(canvas)
-                size = (int(image2.get_width()*sizeDifference[0]*0.9),int(image2.get_height()*sizeDifference[1]*0.9))
+                size = (int(image2.get_width()*sizeDifference[0]),int(image2.get_height()*sizeDifference[1]))
                 image2 = pygame.transform.scale(image2,size)
             # -------------------------------------------------
 
@@ -143,20 +169,12 @@ while not exit:
 
         else:
             # make sure to note down where it failed
-            if fails[0]==1:
+            if fails[0]!="":
                 gløshaugen.hasConnection=False
-            if fails[1]==1:
+            if fails[1]!="":
                 høgskoleringen.hasConnection=False
-            if fails[2]==1:
+            if fails[2]!="":
                 studentersamfundet.hasConnection=False
-
-            # if there was a fail, we check where
-            if fails[0]+fails[1]==0 and fails[2]==1 and showfull>=1:
-                # if only studentersamfundet failed, and we aren't on it, we switch to it
-                showfull=2
-            elif fails[0]+fails[1]>0 and fails[2]==0 and showfull==2:
-                # if studentersamfundet didnt fail, but we're on it, we switch away
-                showfull=0
         
         # reset timer
         startTime=time.time()
@@ -175,7 +193,7 @@ while not exit:
 
 
     # setting timeText
-    timeText = otherFont.render(time.strftime("%H:%M:%S"),True,(255,255,255))
+    timeText = timeFont.render(time.strftime("%H:%M:%S"),True,(255,255,255))
 
 
     # drawing time -------------------------------
@@ -204,7 +222,7 @@ while not exit:
         studentersamfundet.draw(canvas,sizeDifference,roundsGone)
 
     # drawing time
-    dest = (int(2370*sizeDifference[0]),int(1390*sizeDifference[1]))
+    dest = (int(45*sizeDifference[0]),int(35*sizeDifference[1]))
     canvas.blit(timeText,dest)
 
     pygame.display.update()
@@ -212,5 +230,4 @@ while not exit:
     # ----------------------------------------------
 
     # waiting a little, so it doens't run all the time
-    pygame.time.delay(500) # .5 sec
-    roundsGone+=1
+    pygame.time.delay(250) # .25 sec

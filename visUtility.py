@@ -8,29 +8,39 @@ def getBussStops(buss1id,buss1number,buss2id,buss2number,buss3id,buss3number):
 
     # we want to make sure we get information from the API we can use
     test = APIs.enturApi(buss1id,buss1number)
-    if test!=False:
+    if type(test)!=type(""):
         bussRoutes.append(test)
-        fails.append(0)
+        fails.append("")
     else:
-        fails.append(1)
+        fails.append(test)
 
     test = APIs.enturApi(buss2id,buss2number)
-    if test!=False:
+    if type(test)!=type(""):
         bussRoutes.append(test)
-        fails.append(0)
+        fails.append("")
     else:
-        fails.append(1)
+        fails.append(test)
 
     test = APIs.enturApi(buss3id,buss3number)
-    if test!=False:
+    if type(test)!=type(""):
         bussRoutes.append(test)
-        fails.append(0)
+        fails.append("")
     else:
-        fails.append(1)
+        fails.append(test)
+
+    return bussRoutes, fails
+
+def getBussStop(bussid,bussnumber):
+    test = APIs.enturApi(bussid,bussnumber)
+    if type(test)!=type(""):
+        bussRoute=test
+        fail=""
+    else:
+        fail=test
 
     
     # bussRoutes is the optional data, fails tells us if, and who, failed
-    return bussRoutes, fails
+    return bussRoute, fail
         
 
 
@@ -103,16 +113,35 @@ class buss:
             bussNumber=info["serviceJourney"]["journeyPattern"]["line"]["id"].split(":")[2]
         else:
             bussNumber=info["serviceJourney"]["journeyPattern"]["line"]["id"]
+        # creating buss number text
+        self.numberDisplayText = otherFont.render(bussNumber,True,(0,0,0))
+        self.numberDisplayTextRect =self.numberDisplayText.get_rect()
+        movex = int(450*screenDifference[0])
+        movey = self.rect.bottom-(self.rect.height/2)-(self.numberDisplayTextRect.height/2)
+        self.numberDisplayTextRect = self.numberDisplayTextRect.move(movex,movey)
 
         # creating the text and rect for buss display text
-
-        self.displayText = otherFont.render(bussNumber+"  "+info["destinationDisplay"]["frontText"], True, (0,0,0))
+        self.displayText = otherFont.render(info["destinationDisplay"]["frontText"], True, (0,0,0))
         self.displayTextRect = self.displayText.get_rect()
-        movex = int(450*screenDifference[0])
+        movex = int(600*screenDifference[0])
         movey = self.rect.bottom-(self.rect.height/2)-(self.displayTextRect.height/2)
         self.displayTextRect = self.displayTextRect.move(movex,movey)
         
         # --------------------------------------------------------
+
+
+        # Creating time to go text
+        timeToGoTxt=f"{((int(info["expectedDepartureTime"][11:13])-int(time.strftime("%H")))*60+int(info["expectedDepartureTime"][14:16]))-int(time.strftime("%M"))}m"
+        if timeToGoTxt=="0m":
+            timeToGoTxt="Now"
+
+        self.timeToGoText=otherFont.render(timeToGoTxt,True,(0,0,0))
+        self.timeToGoTextRect = self.timeToGoText.get_rect()
+        movex = (int(1630*screenDifference[0])-self.timeToGoText.get_width())
+        movey = self.rect.bottom-(self.rect.height/2)-(self.timeToGoTextRect.height/2)
+        self.timeToGoTextRect = self.timeToGoTextRect.move(movex,movey)
+
+
 
 
 
@@ -133,6 +162,8 @@ class buss:
             # colour matches orbit lifesupport colours.
             radius = int(18*screenDifference[0])
             pygame.draw.circle(canvas,(64,138,201),center,radius)
+            if self.makeLine:
+                pygame.draw.circle(canvas,(4,78,201),center,radius)
         else:
             # if neither, we draw a small red circle, indicating we don't have a realtime reading
             radius = int(4.5*screenDifference[0])
@@ -142,14 +173,15 @@ class buss:
         # we draw the text
         canvas.blit(self.aimedTimeText, self.aimedTimeTextRect)
         canvas.blit(self.timeText, self.timeTextRect)
+        canvas.blit(self.numberDisplayText, self.numberDisplayTextRect)
         canvas.blit(self.displayText, self.displayTextRect)
+        canvas.blit(self.timeToGoText, self.timeToGoTextRect)
 
         # if aimed is not the same as expected we draw a line over aimed time
         if self.makeLine:
             startPos = (int(130.5*screenDifference[0]),self.rect.bottom-(self.rect.height/2))
             endPos = (int(139.5*screenDifference[0]+self.aimedTimeTextRect.width),self.rect.bottom-(self.rect.height/2))
             pygame.draw.line(canvas,(0,0,0),startPos,endPos,int(3*screenDifference[1]))
-
 
 
 class bussStops:

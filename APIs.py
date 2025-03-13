@@ -4,7 +4,7 @@ import requests
 # takes in id and number
 
 def enturApi(id,number):
-    # query tells entur api what we want to know
+    # query tells entur api what we want to know acc time 72100
     query = """
     query {
         stopPlace(id: "NSR:StopPlace:ID-REPLACEMENT") {
@@ -58,11 +58,16 @@ def enturApi(id,number):
         json={'query': query}
     )
 
+    responsejson=response.json()
+
     # checks if we got a sound answer from the api
-    if response.status_code == 200:
+    if responsejson["data"]["stopPlace"]==None:
+        return f"Forespørselen var stopPlace == null"
+    elif len(responsejson["data"]["stopPlace"]["estimatedCalls"])==0:
+        return f"Forespørselen ga ikke nok busstopp"
+    elif response.status_code == 200:
         # if we do, we return the respons as a json format
-        return(response.json())
+        return(response.json())        
     else:
         # if we don't we print a warning and return false
-        print(f"Forespørselen feilet med statuskode {response.status_code}")
-        return False
+        return f"Forespørselen feilet med statuskode {response.status_code}"
